@@ -146,3 +146,7 @@ my-project/
 
 - [Geoffrey Huntley's Ralph article](https://ghuntley.com/ralph/)
 - [Claude Code documentation](https://claude.com/claude-code)
+
+## License
+
+[MIT](LICENSE)
