@@ -1,13 +1,13 @@
 ---
 name: dua
-description: "Convert PRDs to prd.json format for the DuaLoop autonomous agent system. Use when you have an existing PRD and need to convert it to DuaLoop's JSON format. Triggers on: convert this prd, turn this into dualoop format, create prd.json from this, dua json."
-source_id: seb-claude-tools
+description: "Convert PRDs to prd.json format for the dua-loop autonomous agent system. Use when you have an existing PRD and need to convert it to dua-loop's JSON format. Triggers on: convert this prd, turn this into dualoop format, create prd.json from this, dua json."
+source_id: dua-loop
 version: 1.0.0
 ---
 
-# DuaLoop PRD Converter
+# dua-loop PRD Converter
 
-Converts existing PRDs to the prd.json format that DuaLoop uses for autonomous execution.
+Converts existing PRDs to the prd.json format that dua-loop uses for autonomous execution.
 
 ---
 
@@ -96,7 +96,7 @@ Each story has a `verify` field controlling how verification happens. This is a 
 
 **How it works:**
 - `"verify": "inline"` - Agent verifies own work using Goal-Backward Verification in prompt.md (~0 extra tokens)
-- `"verify": "deep"` - After all stories complete, DuaLoop spawns a separate verifier agent to independently confirm goals achieved (~50k-100k tokens)
+- `"verify": "deep"` - After all stories complete, dua-loop spawns a separate verifier agent to independently confirm goals achieved (~50k-100k tokens)
 
 **Auto-assignment rule:** If you assign `"model": "opus"`, also assign `"verify": "deep"`. They go together.
 
@@ -144,7 +144,7 @@ Each story has a `type` field controlling the implementation workflow.
 
 ## Story Size Assignment
 
-Each story has a `size` field used for progress tracking and ETA estimation. DuaLoop tracks completion times per size category to improve estimates over time.
+Each story has a `size` field used for progress tracking and ETA estimation. dua-loop tracks completion times per size category to improve estimates over time.
 
 **Values:** `"small"`, `"medium"`, `"large"`
 
@@ -161,16 +161,16 @@ Each story has a `size` field used for progress tracking and ETA estimation. Dua
 - Stories with `"model": "opus"` are typically `"medium"` or `"large"`
 
 **Time tracking fields:**
-- `startTime` and `endTime` are populated by DuaLoop during execution
+- `startTime` and `endTime` are populated by dua-loop during execution
 - Leave them as empty strings (`""`) when creating prd.json
 
 ---
 
 ## Story Scope: The Number One Rule
 
-**Each story must be completable in ONE DuaLoop iteration (one context window).**
+**Each story must be completable in ONE dua-loop iteration (one context window).**
 
-DuaLoop spawns a fresh Claude Code instance per iteration with no memory of previous work. If a story is too big, the LLM runs out of context before finishing and produces broken code.
+dua-loop spawns a fresh Claude Code instance per iteration with no memory of previous work. If a story is too big, the LLM runs out of context before finishing and produces broken code.
 
 ### Right-sized stories:
 - Add a database column and migration
@@ -205,7 +205,7 @@ Stories execute in priority order. Earlier stories must not depend on later ones
 
 ## Acceptance Criteria: Must Be Verifiable
 
-Each criterion must be something DuaLoop can CHECK, not something vague.
+Each criterion must be something dua-loop can CHECK, not something vague.
 
 ### Good criteria (verifiable):
 - "Add `status` column to tasks table with default 'pending'"
@@ -235,7 +235,7 @@ For stories with testable logic, also include:
 "Verify in browser using Chrome integration"
 ```
 
-Frontend stories are NOT complete until visually verified. DuaLoop will use Chrome browser integration to navigate to the page, interact with the UI, and confirm changes work.
+Frontend stories are NOT complete until visually verified. dua-loop will use Chrome browser integration to navigate to the page, interact with the UI, and confirm changes work.
 
 ---
 
@@ -384,12 +384,12 @@ Note:
 
 ## PRD File Naming Convention
 
-The PRD filename and branchName must match so DuaLoop can archive the correct file on completion:
+The PRD filename and branchName must match so dua-loop can archive the correct file on completion:
 
 - PRD file: `tasks/prd-dark-mode.md`
 - branchName: `dua/dark-mode`
 
-**On completion**, DuaLoop derives the PRD filename from branchName and moves it to archive:
+**On completion**, dua-loop derives the PRD filename from branchName and moves it to archive:
 - `dua/dark-mode` → looks for `tasks/prd-dark-mode.md`
 - Moves to: `tasks/archive/YYYY-MM-DD-dark-mode/prd-dark-mode.md`
 
@@ -427,7 +427,7 @@ Stories: X total (Y small, Z medium, W large)
   - US-002: [title] (small, sonnet, inline)
   - US-003: [title] (medium, sonnet, deep) ← final verification
 
-Would you like me to start the DuaLoop?
+Would you like me to start the dua-loop?
 This will:
 1. Create the feature branch (dua/feature-name)
 2. Run all stories autonomously

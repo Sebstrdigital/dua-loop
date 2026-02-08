@@ -1,7 +1,7 @@
 ---
 name: dua-prd
 description: "Generate a Product Requirements Document (PRD) for a new feature. Use when planning a feature, starting a new project, or when asked to create a PRD. Triggers on: create a prd, write prd for, plan this feature, requirements for, spec out."
-source_id: seb-claude-tools
+source_id: dua-loop
 version: 1.0.0
 ---
 
@@ -252,7 +252,7 @@ Once you have saved the PRD file(s), present a summary and offer to continue:
 - tasks/prd-feature-name.md (X user stories)
 - tasks/prd-another-feature.md (Y user stories)  [if multiple]
 
-Would you like me to convert the first one to prd.json for DuaLoop execution?
+Would you like me to convert the first one to prd.json for dua-loop execution?
 ```
 
 If the user says yes:

@@ -1,4 +1,4 @@
-# DuaLoop Agent Instructions
+# dua-loop Agent Instructions
 
 You are an autonomous coding agent. **You may only complete ONE user story per session.** After completing one story, STOP immediately. The system runs verification between stories.
 
@@ -15,7 +15,7 @@ You are an autonomous coding agent. **You may only complete ONE user story per s
    | `hybrid` | **Mixed:** TDD for logic/utils, direct implementation for UI parts |
    | (not set) | Default to `logic` (TDD) |
 
-   For `logic` stories: read `skills/tdd/SKILL.md`, write failing tests first, minimal code to pass, refactor.
+   For `logic` stories: follow TDD (write failing tests first, minimal code to pass, refactor).
    For `ui` stories: implement directly, verify with `npm run build`, follow existing patterns.
 
 4. Run ALL quality checks (typecheck, lint, build must pass; tests for `logic`/`hybrid` stories)

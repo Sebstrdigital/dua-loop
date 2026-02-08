@@ -14,7 +14,7 @@ setup() {
   PRD_FILE="$TEST_TMPDIR/prd.json"
 
   # Source dualoop.sh to get functions (source guard will return 0)
-  source "$TESTS_DIR/../dualoop.sh"
+  source "$TESTS_DIR/../bin/dualoop.sh"
 }
 
 teardown() {

@@ -1,10 +1,10 @@
 #!/bin/bash
-# DuaLoop - Autonomous AI agent loop
+# dua-loop - Autonomous AI agent loop
 # Usage: dualoop [init|install|max_iterations]
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DATA_DIR="$HOME/.claude/lib/dualoop"
 PROJECT_ROOT="$(pwd)"
 
 PRD_FILE="$PROJECT_ROOT/prd.json"
@@ -270,7 +270,7 @@ get_progress_summary() {
 
 # Initialize per-project scaffolding
 dualoop_init() {
-  echo "Initializing DuaLoop in $(pwd)..."
+  echo "Initializing dua-loop in $(pwd)..."
 
   mkdir -p tasks/archive
 
@@ -279,7 +279,7 @@ dualoop_init() {
   fi
 
   if [ ! -f progress.txt ]; then
-    printf "# DuaLoop Progress Log\nStarted: %s\n---\n" "$(date)" > progress.txt
+    printf "# dua-loop Progress Log\nStarted: %s\n---\n" "$(date)" > progress.txt
   fi
 
   # .gitignore entries
@@ -293,46 +293,6 @@ dualoop_init() {
   echo "Done. Project files: prd.json, progress.txt, tasks/"
 }
 
-# Global installation (symlinks)
-dualoop_install() {
-  local bin_dir="$HOME/.local/bin"
-  local cmd_dir="$HOME/.claude/commands"
-
-  mkdir -p "$bin_dir" "$cmd_dir"
-
-  # Symlink dualoop binary
-  ln -sf "$SCRIPT_DIR/dualoop.sh" "$bin_dir/dualoop"
-  echo "Linked: $bin_dir/dualoop"
-
-  # Symlink skills (dua-prd to avoid conflict with existing /prd)
-  ln -sf "$SCRIPT_DIR/skills/prd/SKILL.md" "$cmd_dir/dua-prd.md"
-  ln -sf "$SCRIPT_DIR/skills/dua/SKILL.md" "$cmd_dir/dua.md"
-  ln -sf "$SCRIPT_DIR/skills/tdd/SKILL.md" "$cmd_dir/tdd.md"
-  echo "Linked: /dua-prd, /dua, /tdd → ~/.claude/commands/"
-
-  # Append to ~/.claude/CLAUDE.md if DuaLoop section doesn't exist
-  local claude_md="$HOME/.claude/CLAUDE.md"
-  if [ ! -f "$claude_md" ] || ! grep -q "DuaLoop" "$claude_md" 2>/dev/null; then
-    cat >> "$claude_md" << 'SECTION'
-
-## DuaLoop - Autonomous Agent Loop
-
-Available globally. Use when a project has `prd.json`:
-- `dualoop` — run the autonomous loop
-- `dualoop init` — scaffold a new project
-- `/dua-prd` — generate PRD from feature description
-- `/dua` — convert PRD to prd.json
-- `/tdd` — TDD workflow
-SECTION
-    echo "Updated: ~/.claude/CLAUDE.md"
-  fi
-
-  echo ""
-  echo "Install complete. Usage:"
-  echo "  cd ~/my-project && dualoop init"
-  echo "  dualoop          # run the loop"
-}
-
 # Source guard: allow sourcing for tests without executing main logic
 [[ "${BASH_SOURCE[0]}" != "${0}" ]] && return 0
 
@@ -340,10 +300,6 @@ SECTION
 case "${1:-}" in
   init)
     dualoop_init
-    exit 0
-    ;;
-  install)
-    dualoop_install
     exit 0
     ;;
 esac
@@ -385,7 +341,7 @@ fi
 
 # Initialize progress file if it doesn't exist
 if [ ! -f "$PROGRESS_FILE" ]; then
-  echo "# DuaLoop Progress Log" > "$PROGRESS_FILE"
+  echo "# dua-loop Progress Log" > "$PROGRESS_FILE"
   echo "Started: $(date)" >> "$PROGRESS_FILE"
   echo "---" >> "$PROGRESS_FILE"
 fi
@@ -393,9 +349,9 @@ fi
 if [ "$_MAX_ITER_SOURCE" = "auto" ]; then
   _STORY_COUNT=$(jq '[.userStories[] | select(.passes == false)] | length' "$PRD_FILE" 2>/dev/null || echo 0)
   _BUFFER=$(( MAX_ITERATIONS - _STORY_COUNT ))
-  echo "Starting DuaLoop - Max iterations: $MAX_ITERATIONS (auto: $_STORY_COUNT stories + $_BUFFER buffer)"
+  echo "Starting dua-loop - Max iterations: $MAX_ITERATIONS (auto: $_STORY_COUNT stories + $_BUFFER buffer)"
 else
-  echo "Starting DuaLoop - Max iterations: $MAX_ITERATIONS"
+  echo "Starting dua-loop - Max iterations: $MAX_ITERATIONS"
 fi
 echo "Project root: $PROJECT_ROOT"
 
@@ -465,7 +421,7 @@ for i in $(seq 1 $MAX_ITERATIONS); do
   PROGRESS_SUMMARY=$(get_progress_summary)
 
   echo "═══════════════════════════════════════════════════════════"
-  echo "  DuaLoop Iteration $i of $MAX_ITERATIONS"
+  echo "  dua-loop Iteration $i of $MAX_ITERATIONS"
   if [ -n "$PROGRESS_SUMMARY" ]; then
     echo "  Progress: $PROGRESS_SUMMARY"
   fi
@@ -489,7 +445,7 @@ for i in $(seq 1 $MAX_ITERATIONS); do
   echo ""
 
   OUTPUT=""
-  PROMPT_CONTENT=$(cat "$SCRIPT_DIR/prompt.md")
+  PROMPT_CONTENT=$(cat "$DATA_DIR/prompt.md")
   run_with_timeout "$STORY_TIMEOUT" OUTPUT claude -p "$PROMPT_CONTENT" --model "$STORY_MODEL" --dangerously-skip-permissions $CHROME_FLAG
   CLAUDE_EXIT_CODE=$?
 
@@ -540,7 +496,7 @@ Verify that story $VERIFY_STORY_ID - "$VERIFY_TITLE" actually achieved its goals
 - $VERIFY_CRITERIA
 
 ## Instructions
-$(cat "$SCRIPT_DIR/agents/verifier.md")
+$(cat "$DATA_DIR/verifier.md")
 
 ## Recent Changes
 Run \`git log --oneline -5\` and \`git diff HEAD~3\` to see recent changes.
@@ -569,7 +525,7 @@ EOF
     else
       echo ""
       echo "╔═══════════════════════════════════════════════════════════╗"
-      echo "║              DuaLoop completed all tasks!                 ║"
+      echo "║              dua-loop completed all tasks!                 ║"
       echo "╚═══════════════════════════════════════════════════════════╝"
       echo ""
       echo "Completed at iteration $i of $MAX_ITERATIONS"
@@ -648,7 +604,7 @@ EOF
             git push -u origin "$COMPLETED_BRANCH" 2>/dev/null || git push --set-upstream origin "$COMPLETED_BRANCH"
             # Create PR using gh CLI if available
             if command -v gh &> /dev/null; then
-              gh pr create --base "$RETURN_BRANCH" --head "$COMPLETED_BRANCH" --title "$PR_DESCRIPTION" --body "Implemented via DuaLoop autonomous agent."
+              gh pr create --base "$RETURN_BRANCH" --head "$COMPLETED_BRANCH" --title "$PR_DESCRIPTION" --body "Implemented via dua-loop autonomous agent."
             else
               echo ""
               echo "GitHub CLI (gh) not installed. Create PR manually:"
@@ -672,6 +628,6 @@ EOF
 done
 
 echo ""
-echo "DuaLoop reached max iterations ($MAX_ITERATIONS) without completing all tasks."
+echo "dua-loop reached max iterations ($MAX_ITERATIONS) without completing all tasks."
 echo "Check $PROGRESS_FILE for status."
 exit 1
